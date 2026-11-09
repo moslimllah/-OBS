@@ -11,6 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="OB/GYN Calc">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f766e'/%3E%3Ccircle cx='256' cy='256' r='170' fill='none' stroke='%23ffffff' stroke-width='24' stroke-dasharray='80 30'/%3E%3Ctext x='256' y='240' font-family='Arial, sans-serif' font-size='85' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EOB%3C/text%3E%3Ctext x='256' y='325' font-family='Arial, sans-serif' font-size='60' font-weight='bold' fill='%2399f6e4' text-anchor='middle'%3ECALC%3C/text%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f766e'/%3E%3Ccircle cx='256' cy='256' r='170' fill='none' stroke='%23ffffff' stroke-width='24' stroke-dasharray='80 30'/%3E%3Ctext x='256' y='240' font-family='Arial, sans-serif' font-size='85' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EOB%3C/text%3E%3Ctext x='256' y='325' font-family='Arial, sans-serif' font-size='60' font-weight='bold' fill='%2399f6e4' text-anchor='middle'%3ECALC%3C/text%3E%3C/svg%3E">
+    <link rel="manifest" href='data:application/manifest+json,{"name":"OB/GYN Clinical Calculator","short_name":"OB/GYN Calc","start_url":"./","display":"standalone","background_color":"#f8fafc","theme_color":"#0f766e","dir":"rtl","lang":"ar","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Crect width=%27512%27 height=%27512%27 rx=%27115%27 fill=%27%230f766e%27/%3E%3Ccircle cx=%27256%27 cy=%27256%27 r=%27170%27 fill=%27none%27 stroke=%27%23ffffff%27 stroke-width=%2724%27 stroke-dasharray=%2780 30%27/%3E%3Ctext x=%27256%27 y=%27240%27 font-family=%27Arial, sans-serif%27 font-size=%2785%27 font-weight=%27bold%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EOB%3C/text%3E%3Ctext x=%27256%27 y=%27325%27 font-family=%27Arial, sans-serif%27 font-size=%2760%27 font-weight=%27bold%27 fill=%27%2399f6e4%27 text-anchor=%27middle%27%3ECALC%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
     <style>
         :root {
             --primary: #0f766e; --primary-light: #14b8a6; --primary-bg: #f0fdfa;
@@ -71,7 +72,7 @@
 <header>
     <div>
         <h1>OB/GYN Clinical Wheel</h1>
-        <div class="subtitle">حاسبة الحمل والشهور الطبية</div>
+        <div class="subtitle">حاسبة الحمل والشهور الطبية (Offline Ready ✓)</div>
     </div>
     <div class="today-badge" id="todayDisplay"></div>
 </header>
@@ -229,6 +230,12 @@
 </div>
 
 <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js');
+        });
+    }
+
     const MS_PER_DAY = 86400000;
     function getTodayMidnight() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
     function formatDateISO(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
