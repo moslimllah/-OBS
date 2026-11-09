@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OB/GYN Calc</title>
+    <meta name="theme-color" content="#0f766e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="OB/GYN Calc">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f766e'/%3E%3Ccircle cx='256' cy='256' r='170' fill='none' stroke='%23ffffff' stroke-width='24' stroke-dasharray='80 30'/%3E%3Ctext x='256' y='240' font-family='Arial, sans-serif' font-size='85' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EOB%3C/text%3E%3Ctext x='256' y='325' font-family='Arial, sans-serif' font-size='60' font-weight='bold' fill='%2399f6e4' text-anchor='middle'%3ECALC%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f766e'/%3E%3Ccircle cx='256' cy='256' r='170' fill='none' stroke='%23ffffff' stroke-width='24' stroke-dasharray='80 30'/%3E%3Ctext x='256' y='240' font-family='Arial, sans-serif' font-size='85' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EOB%3C/text%3E%3Ctext x='256' y='325' font-family='Arial, sans-serif' font-size='60' font-weight='bold' fill='%2399f6e4' text-anchor='middle'%3ECALC%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --primary: #0f766e; --primary-light: #14b8a6; --primary-bg: #f0fdfa;
+            --secondary: #1e293b; --bg: #f8fafc; --card: #ffffff;
+            --text: #0f172a; --text-muted: #64748b; --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 12px; max-width: 850px; margin: 0 auto; padding-bottom: 40px; }
+        header { background: linear-gradient(135deg, var(--primary), #0d9488); color: white; padding: 16px 18px; border-radius: 16px; box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        header h1 { font-size: 1.25rem; font-weight: 700; }
+        header .subtitle { font-size: 0.82rem; opacity: 0.9; }
+        .today-badge { background: rgba(255, 255, 255, 0.2); padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; direction: ltr; font-weight: 600; }
+        .tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+        @media (min-width: 650px) { .tabs { grid-template-columns: repeat(4, 1fr); } }
+        .tab-btn { background: var(--card); border: 2px solid var(--border); padding: 10px 8px; border-radius: 12px; cursor: pointer; font-weight: 700; color: var(--secondary); text-align: center; font-size: 0.88rem; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .tab-btn span { display: block; font-size: 0.72rem; opacity: 0.85; font-weight: normal; margin-top: 2px; }
+        .card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid var(--border); margin-bottom: 16px; }
+        .input-panel { display: none; }
+        .input-panel.active { display: block; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--secondary); font-size: 0.92rem; }
+        .hint { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; display: block; }
+        input[type="date"], input[type="number"], select { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 1rem; background: #fff; color: var(--text); }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn-calc { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; font-size: 1.05rem; font-weight: 700; border-radius: 12px; cursor: pointer; margin-top: 6px; }
+        .sub-mode-selector { display: flex; gap: 6px; margin-bottom: 14px; background: #f1f5f9; padding: 5px; border-radius: 10px; }
+        .sub-mode-btn { flex: 1; padding: 8px 6px; border: none; border-radius: 8px; background: transparent; cursor: pointer; font-weight: 600; font-size: 0.8rem; color: var(--text-muted); }
+        .sub-mode-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+        #results { display: none; }
+        .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+        @media (min-width: 650px) { .results-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-box { background: var(--primary-bg); border: 1px solid #99f6e4; padding: 14px 10px; border-radius: 14px; text-align: center; }
+        .stat-box.highlight { background: linear-gradient(135deg, #0f766e, #0d9488); color: white; border: none; }
+        .stat-label { font-size: 0.72rem; text-transform: uppercase; opacity: 0.85; margin-bottom: 4px; font-weight: 600; }
+        .stat-value { font-size: 1.25rem; font-weight: 800; direction: ltr; }
+        .stat-sub { font-size: 0.76rem; margin-top: 4px; opacity: 0.9; }
+        .patient-summary { background: #fffbeb; border: 1px solid #fde68a; border-right: 5px solid #f59e0b; padding: 14px; border-radius: 12px; margin-bottom: 16px; }
+        .patient-summary h3 { color: #92400e; font-size: 0.9rem; margin-bottom: 4px; }
+        .patient-summary p { color: #78350f; font-weight: 600; font-size: 0.98rem; }
+        .progress-container { margin-bottom: 18px; }
+        .progress-bar-bg { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #14b8a6, #0284c7); width: 0%; transition: width 0.4s ease; }
+        .trimester-markers { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; font-weight: 600; }
+        .milestones-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .milestones-table th, .milestones-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); text-align: right; }
+        .milestones-table th { background: #f8fafc; color: var(--secondary); font-weight: 700; }
+        .badge { display: inline-block; padding: 3px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+        .badge-done { background: #dcfce7; color: #166534; }
+        .badge-active { background: #dbeafe; color: #1e40af; }
+        .badge-upcoming { background: #f1f5f9; color: #475569; }
+        @media (max-width: 550px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>OB/GYN Clinical Wheel</h1>
+        <div class="subtitle">حاسبة الحمل والشهور الطبية</div>
+    </div>
+    <div class="today-badge" id="todayDisplay"></div>
+</header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('lmp', this)">آخر دورة شهرية<span>LMP Date</span></button>
+    <button class="tab-btn" onclick="switchTab('egyptMonth', this)">حسبة الشهور (للمريضة)<span>تمت شهر كذا / بتقفل يوم كذا</span></button>
+    <button class="tab-btn" onclick="switchTab('edd', this)">موعد الولادة المتوقع<span>Known EDD</span></button>
+    <button class="tab-btn" onclick="switchTab('us', this)">سونار سابق أو GA<span>Previous US / GA</span></button>
+</div>
+
+<div class="card">
+    <div id="panel-lmp" class="input-panel active">
+        <div class="row-2">
+            <div class="form-group">
+                <label>أول يوم في آخر دورة شهرية (LMP)</label>
+                <input type="date" id="lmpDate">
+            </div>
+            <div class="form-group">
+                <label>طول الدورة الشهرية (Cycle Length)</label>
+                <input type="number" id="cycleLength" value="28" min="20" max="45">
+                <span class="hint">الافتراضي 28 يوم</span>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calculateFromLMP()">احسب الآن (Calculate)</button>
+    </div>
+
+    <div id="panel-egyptMonth" class="input-panel">
+        <div class="sub-mode-selector">
+            <button class="sub-mode-btn active" id="subBtn1" onclick="switchEgyptSubMode(1)">قالت: "تميت الشهر الكذا يوم كذا"</button>
+            <button class="sub-mode-btn" id="subBtn2" onclick="switchEgyptSubMode(2)">قالت: "بدخل شهر جديد كل يوم كذا"</button>
+        </div>
+
+        <div id="egyptSub1">
+            <div class="row-2">
+                <div class="form-group">
+                    <label>الشهر الذي أتمته (أو قفلته)</label>
+                    <select id="completedMonthNum">
+                        <option value="1">أتمت الشهر الأول</option>
+                        <option value="2">أتمت الشهر الثاني</option>
+                        <option value="3">أتمت الشهر الثالث</option>
+                        <option value="4">أتمت الشهر الرابع</option>
+                        <option value="5" selected>أتمت الشهر الخامس</option>
+                        <option value="6">أتمت الشهر السادس</option>
+                        <option value="7">أتمت الشهر السابع</option>
+                        <option value="8">أتمت الشهر الثامن</option>
+                        <option value="9">أتمت الشهر التاسع</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>في أي تاريخ أتمت هذا الشهر؟</label>
+                    <input type="date" id="completedMonthDate">
+                </div>
+            </div>
+            <button class="btn-calc" onclick="calculateFromEgyptMonth1()">احسب عمر الجنين والـ EDD</button>
+        </div>
+
+        <div id="egyptSub2" style="display:none;">
+            <div class="row-2">
+                <div class="form-group">
+                    <label>المريضة حالياً ماشية في الشهر الكام؟</label>
+                    <select id="currentWalkingMonth">
+                        <option value="1">ماشية في الشهر الأول</option>
+                        <option value="2">ماشية في الشهر الثاني</option>
+                        <option value="3">ماشية في الشهر الثالث</option>
+                        <option value="4">ماشية في الشهر الرابع</option>
+                        <option value="5" selected>ماشية في الشهر الخامس</option>
+                        <option value="6">ماشية في الشهر السادس</option>
+                        <option value="7">ماشية في الشهر السابع</option>
+                        <option value="8">ماشية في الشهر الثامن</option>
+                        <option value="9">ماشية في الشهر التاسع</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>يوم قفل الشهر / دخول شهر جديد (1 - 31)</label>
+                    <input type="number" id="dayOfNewMonth" min="1" max="31" value="15">
+                </div>
+            </div>
+            <button class="btn-calc" onclick="calculateFromEgyptMonth2()">احسب عمر الجنين والـ EDD</button>
+        </div>
+    </div>
+
+    <div id="panel-edd" class="input-panel">
+        <div class="form-group">
+            <label>موعد الولادة المتوقع (EDD)</label>
+            <input type="date" id="eddInputDate">
+        </div>
+        <button class="btn-calc" onclick="calculateFromEDD()">احسب الآن (Calculate)</button>
+    </div>
+
+    <div id="panel-us" class="input-panel">
+        <div class="row-3">
+            <div class="form-group">
+                <label>تاريخ السونار (US Date)</label>
+                <input type="date" id="usDate">
+            </div>
+            <div class="form-group">
+                <label>عدد الأسابيع (Weeks)</label>
+                <input type="number" id="usWeeks" min="0" max="42" value="20">
+            </div>
+            <div class="form-group">
+                <label>عدد الأيام (Days)</label>
+                <input type="number" id="usDays" min="0" max="6" value="0">
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calculateFromUS()">احسب عمر الجنين اليوم والـ EDD</button>
+    </div>
+</div>
+
+<div id="results">
+    <div class="results-grid">
+        <div class="stat-box highlight">
+            <div class="stat-label">Gestational Age</div>
+            <div class="stat-value" id="resGA">--</div>
+            <div class="stat-sub" id="resGADaysTotal">--</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Expected Delivery (EDD)</div>
+            <div class="stat-value" id="resEDD">--</div>
+            <div class="stat-sub" id="resRemaining">--</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Trimester</div>
+            <div class="stat-value" id="resTrimester">--</div>
+            <div class="stat-sub" id="resTrimesterAr">--</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Estimated LMP</div>
+            <div class="stat-value" id="resLMP">--</div>
+            <div class="stat-sub">أول يوم في آخر دورة</div>
+        </div>
+    </div>
+
+    <div class="patient-summary">
+        <h3>💬 ترجمة الحسبة للغة المريضة (في العيادة):</h3>
+        <p id="resPatientLang">--</p>
+    </div>
+
+    <div class="card">
+        <div class="progress-container">
+            <label>تقدم الحمل (<span id="resProgressPct">0%</span>)</label>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+            <div class="trimester-markers">
+                <span>0w</span><span>1st Tri (<14w)</span><span>2nd Tri (14-28w)</span><span>Term (37w)</span><span>40w</span>
+            </div>
+        </div>
+        <h3 style="margin-bottom: 10px; font-size: 0.95rem;">📅 أجندة المتابعة الإكلينيكية:</h3>
+        <div style="overflow-x: auto;">
+            <table class="milestones-table">
+                <thead><tr><th>الحدث الإكلينيكي</th><th>الأسبوع</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+                <tbody id="milestonesBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const MS_PER_DAY = 86400000;
+    function getTodayMidnight() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+    function formatDateISO(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+    function formatDateReadable(d) { return d.toLocaleDateString('en-GB', { year:'numeric', month:'short', day:'numeric' }); }
+    function formatDateArabic(d) { return d.toLocaleDateString('ar-EG', { weekday:'long', year:'numeric', month:'long', day:'numeric' }); }
+
+    window.onload = function() {
+        const today = getTodayMidnight();
+        document.getElementById('todayDisplay').innerText = formatDateReadable(today);
+        document.getElementById('usDate').value = formatDateISO(today);
+        document.getElementById('completedMonthDate').value = formatDateISO(new Date(today.getTime() - 15 * MS_PER_DAY));
+    };
+
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.input-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function switchEgyptSubMode(mode) {
+        document.getElementById('subBtn1').classList.toggle('active', mode === 1);
+        document.getElementById('subBtn2').classList.toggle('active', mode === 2);
+        document.getElementById('egyptSub1').style.display = mode === 1 ? 'block' : 'none';
+        document.getElementById('egyptSub2').style.display = mode === 2 ? 'block' : 'none';
+    }
+
+    function parseInputDate(id) {
+        const val = document.getElementById(id).value;
+        if (!val) return null;
+        const p = val.split('-');
+        return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+    }
+
+    function calculateFromLMP() {
+        const lmp = parseInputDate('lmpDate');
+        if (!lmp) return alert('برجاء إدخال تاريخ آخر دورة');
+        const cycle = parseInt(document.getElementById('cycleLength').value) || 28;
+        renderAllResults(new Date(lmp.getTime() + (cycle - 28) * MS_PER_DAY));
+    }
+
+    function calculateFromEgyptMonth1() {
+        const m = parseInt(document.getElementById('completedMonthNum').value);
+        const d = parseInputDate('completedMonthDate');
+        if (!d) return alert('برجاء تحديد التاريخ');
+        const edd = new Date(d.getFullYear(), d.getMonth() + (9 - m), d.getDate());
+        renderAllResults(new Date(edd.getTime() - 280 * MS_PER_DAY));
+    }
+
+    function calculateFromEgyptMonth2() {
+        const curM = parseInt(document.getElementById('currentWalkingMonth').value);
+        const day = parseInt(document.getElementById('dayOfNewMonth').value);
+        if (!day || day < 1 || day > 31) return alert('برجاء إدخال يوم صحيح');
+        const today = getTodayMidnight();
+        let startM = new Date(today.getFullYear(), today.getMonth(), day);
+        if (startM > today) startM = new Date(today.getFullYear(), today.getMonth() - 1, day);
+        const edd = new Date(startM.getFullYear(), startM.getMonth() + (9 - (curM - 1)), startM.getDate());
+        renderAllResults(new Date(edd.getTime() - 280 * MS_PER_DAY));
+    }
+
+    function calculateFromEDD() {
+        const edd = parseInputDate('eddInputDate');
+        if (!edd) return alert('برجاء إدخال موعد الولادة المتوقع');
+        renderAllResults(new Date(edd.getTime() - 280 * MS_PER_DAY));
+    }
+
+    function calculateFromUS() {
+        const usDate = parseInputDate('usDate');
+        if (!usDate) return alert('برجاء إدخال تاريخ السونار');
+        const w = parseInt(document.getElementById('usWeeks').value) || 0;
+        const d = parseInt(document.getElementById('usDays').value) || 0;
+        renderAllResults(new Date(usDate.getTime() - ((w * 7) + d) * MS_PER_DAY));
+    }
+
+    function renderAllResults(effectiveLMP) {
+        const today = getTodayMidnight();
+        const edd = new Date(effectiveLMP.getTime() + 280 * MS_PER_DAY);
+        const totalDays = Math.round((today.getTime() - effectiveLMP.getTime()) / MS_PER_DAY);
+        const remDays = Math.round((edd.getTime() - today.getTime()) / MS_PER_DAY);
+        const gaWeeks = Math.floor(totalDays / 7);
+        const gaDays = ((totalDays % 7) + 7) % 7;
+
+        let triEn = totalDays < 98 ? "1st Trimester" : (totalDays < 196 ? "2nd Trimester" : "3rd Trimester");
+        let triAr = totalDays < 98 ? "الثلث الأول (1 - 3)" : (totalDays < 196 ? "الثلث الثاني (4 - 6)" : "الثلث الثالث (7 - 9)");
+
+        const anchor = new Date(effectiveLMP.getTime() + 7 * MS_PER_DAY);
+        const anchorDay = anchor.getDate();
+        let mPassed = (today.getFullYear() - anchor.getFullYear()) * 12 + (today.getMonth() - anchor.getMonth());
+        let lastTurn = new Date(today.getFullYear(), today.getMonth(), anchorDay);
+        if (today < lastTurn) { mPassed--; lastTurn = new Date(today.getFullYear(), today.getMonth() - 1, anchorDay); }
+        const daysInM = Math.max(0, Math.round((today.getTime() - lastTurn.getTime()) / MS_PER_DAY));
+        const curMNum = mPassed + 1;
+        const mNames = ["قبل الأول","الأول","الثاني","الثالث","الرابع","الخامس","السادس","السابع","الثامن","التاسع","بعد التاسع"];
+        const mLabel = mNames[Math.min(Math.max(curMNum, 0), 10)];
+
+        document.getElementById('resGA').innerText = `${gaWeeks}w + ${gaDays}d`;
+        document.getElementById('resGADaysTotal').innerText = `إجمالي ${totalDays} يوم`;
+        document.getElementById('resEDD').innerText = formatDateReadable(edd);
+        document.getElementById('resRemaining').innerText = remDays >= 0 ? `متبقي ${remDays} يوم` : `تخطت بـ ${Math.abs(remDays)} يوم`;
+        document.getElementById('resTrimester').innerText = triEn;
+        document.getElementById('resTrimesterAr').innerText = triAr;
+        document.getElementById('resLMP').innerText = formatDateReadable(effectiveLMP);
+        document.getElementById('resPatientLang').innerHTML = `المريضة ماشية في <strong>الشهر ${mLabel}</strong> (بقالها ${daysInM} يوم فيه) — بتقفل شهر وتدخل في شهر جديد كل يوم <strong>${anchorDay}</strong> في الشهر. (بداية التاسع: ${formatDateArabic(new Date(edd.getFullYear(), edd.getMonth() - 1, edd.getDate()))}).`;
+
+        const pct = Math.min(100, Math.max(0, Math.round((totalDays / 280) * 100)));
+        document.getElementById('resProgressPct').innerText = pct + "%";
+        document.getElementById('progressBar').style.width = pct + "%";
+
+        const milestones = [
+            { name: "ظهور النبض (Cardiac Activity)", s: 6, e: 7 },
+            { name: "الشفافية القفوية (NT Scan)", s: 11, e: 13.85 },
+            { name: "نهاية الثلث الأول / Cerclage", s: 14, e: 14 },
+            { name: "سونار التشوهات (Anomaly Scan)", s: 18, e: 22 },
+            { name: "سكر الحمل + حقنة الرئة (Dexa)", s: 24, e: 34 },
+            { name: "بداية الثلث الثالث + Anti-D", s: 28, e: 28 },
+            { name: "بداية الشهر التاسع (Term 37w)", s: 37, e: 37 },
+            { name: "القيصرية الاختيارية (Elective CS)", s: 39, e: 39 },
+            { name: "موعد الولادة المتوقع (EDD 40w)", s: 40, e: 40 }
+        ];
+
+        const tbody = document.getElementById('milestonesBody');
+        tbody.innerHTML = "";
+        milestones.forEach(m => {
+            const sD = new Date(effectiveLMP.getTime() + Math.round(m.s * 7) * MS_PER_DAY);
+            const eD = new Date(effectiveLMP.getTime() + Math.round(m.e * 7) * MS_PER_DAY);
+            const dStr = m.s === m.e ? formatDateReadable(sD) : `${formatDateReadable(sD)} - ${formatDateReadable(eD)}`;
+            const wStr = m.s === m.e ? `${Math.floor(m.s)}w` : `${Math.floor(m.s)}-${Math.floor(m.e)}w`;
+            const badge = today > eD ? `<span class="badge badge-done">تم</span>` : (today >= sD ? `<span class="badge badge-active">حالياً</span>` : `<span class="badge badge-upcoming">قادم</span>`);
+            tbody.innerHTML += `<tr><td style="font-weight:600;">${m.name}</td><td style="direction:ltr;">${wStr}</td><td style="direction:ltr;">${dStr}</td><td>${badge}</td></tr>`;
+        });
+
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
